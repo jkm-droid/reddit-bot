@@ -9,7 +9,7 @@ load_dotenv()
 # initialize necessary variables
 app_id = os.environ.get('APP_ID')
 app_secret = os.environ.get('APP_SECRET')
-password = os.environ.get('PASSWORD')
+password = os.environ.get('REDDIT_PASSWORD')
 username = "jkm_droid_2496"
 user_agent = "battles station by u/jkm_droid_2496"  # <platform>:<app ID>:<version string> (by u/<Reddit username>)
 

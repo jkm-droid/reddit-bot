@@ -1,7 +1,8 @@
 from config import create_reddit
+from database import create_db_connection
 from logger import log
 import constants
-import worker
+import reddit_worker
 
 
 def main():
@@ -10,10 +11,17 @@ def main():
     # establish connection to reddit
     reddit = create_reddit()
     if reddit:
-        log("connected", constants.msg_info)
-        log(reddit.user.me(), constants.msg_info)
+        log(f"connected as {reddit.user.me()}", constants.msg_info)
+        # extract submission and comment ids
+        # save the ids in a text file
+        reddit_worker.extract_data_from_reddit(reddit, "Minecraft", "build")
 
-        worker.get_keywords_from_reddit(reddit, "Minecraft", "game")
+        # establish db connection
+        # read data from text file and insert/update db
+        # close db
+        db_connection = create_db_connection()
+        reddit_worker.save_data_to_db(db_connection)
+        db_connection.close()
     else:
         log("Connection could not be established", constants.msg_error)
 
