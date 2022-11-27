@@ -1,7 +1,7 @@
 import os
 import re
 
-import constants
+from constants import constants
 from logger import log
 
 
@@ -38,11 +38,11 @@ def check_keyword_from_submissions(submission, keyword, sub_reddit_name):
     # check if the keyword is present in submission
     if re.search(keyword, submission.title, re.IGNORECASE):
         # save the found submissions ids in text file
-        if not os.path.isfile("submissions.txt"):
+        if not os.path.isfile("../submissions.txt"):
             save_data_to_file("submissions", submission.id)
 
         # ensure there are no duplicates
-        submission_ids = open("submissions.txt", 'r', encoding='utf-8')
+        submission_ids = open("../submissions.txt", 'r', encoding='utf-8')
         ids = submission_ids.read()
 
         if re.search(submission.id, ids):
@@ -66,3 +66,11 @@ def check_keyword_from_comments(comment, keyword):
             comment_file.close()
         else:
             save_data_to_file("comments", comment.id)
+
+
+# delete text files from the system
+def delete_data_files():
+    log("Removing data files", constants.msg_info)
+    os.remove(constants.submission_file)
+    os.remove(constants.comment_file)
+    log("Removed data files", constants.msg_info)

@@ -1,6 +1,6 @@
 import os
 import mysql.connector as mysql
-import constants
+from constants import constants
 
 from dotenv import load_dotenv
 from mysql.connector import errorcode
@@ -26,7 +26,7 @@ def create_db_connection():
             user=user,
             password=password)
 
-        log("connected successfully", constants.msg_info)
+        log("Db connection established successfully", constants.msg_info)
         return connection
     except mysql.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
