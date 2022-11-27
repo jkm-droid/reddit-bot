@@ -12,7 +12,7 @@ msg_critical = "critical"
 
 sub_hot = "HOT"
 sub_top = "TOP"
-submission_file = "../submissions.txt"
+submission_file = "submissions.txt"
 comment_file = "comments.txt"
 sub_category = "submission"
 com_category = "comment"

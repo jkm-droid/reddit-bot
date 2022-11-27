@@ -64,3 +64,18 @@ def check_if_record_exists(db_cursor, bot_id, item_id, item_type):
         return 1
     else:
         return 0
+
+
+def count_db_records(db_connection):
+    db_cursor = db_connection.cursor()
+    submission_query = "SELECT COUNT(*) FROM submissions WHERE (is_replied=%s AND  is_upvoted=%s)"
+    comment_query = "SELECT COUNT(*) FROM comments WHERE (is_replied=%s AND  is_upvoted=%s)"
+    db_cursor.execute(submission_query, (0, 0))
+    result = db_cursor.fetchone()
+    sub_count = result[0]
+
+    db_cursor.execute(comment_query, (0, 0))
+    result = db_cursor.fetchone()
+    com_count = result[0]
+
+    return sub_count + com_count
