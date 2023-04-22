@@ -1,6 +1,3 @@
-bot_name = "reddit-bot-test"
-bot_id = 1
-
 tweet_intervals = 30
 exception_interval = 30
 location_interval = 50
@@ -14,5 +11,5 @@ sub_hot = "HOT"
 sub_top = "TOP"
 submission_file = "submissions.txt"
 comment_file = "comments.txt"
-sub_category = "submission"
-com_category = "comment"
+submission_category = "submission"
+comment_category = "comment"

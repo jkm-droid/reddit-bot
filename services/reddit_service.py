@@ -1,6 +1,5 @@
 import os
 import re
-
 from constants import constants
 from logger import log
 
