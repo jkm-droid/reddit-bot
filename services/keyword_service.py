@@ -13,28 +13,29 @@ bot_user_id = os.environ.get('BOT_USER_ID')
 
 
 def keyword(db_connection, sub_reddit_id):
-    keyword_result = get_keyword_from_db(db_connection)
+    db_cursor = db_connection.cursor(buffered=True)
+    keyword_result = get_keyword_from_db(db_cursor)
     if keyword_result is not None:
-        db_cursor = db_connection.cursor(buffered=True)
-        # mark keyword as extracted
-        update_query = "UPDATE keywords SET is_extracted=%s WHERE id=%s"
-        db_cursor.execute(update_query, (1, keyword_result[0]))
-        db_connection.commit()
-
+        update_keyword_is_extracted_status(db_connection, keyword_result[0])
+        db_cursor.close()
         # return keyword name
         return keyword_result[2]
     else:
+        # mark keywords as un-extracted and sub_reddit as extracted
         update_sub_reddit_and_keywords(db_connection, sub_reddit_id)
 
-        return get_keyword_from_db(db_connection)
+        _result = get_keyword_from_db(db_cursor)
+        db_cursor.close()
+        # set extracted status to true
+        update_keyword_is_extracted_status(db_connection, _result[0])
+
+        return _result[2]
 
 
-def get_keyword_from_db(db_connection):
-    db_cursor = db_connection.cursor(buffered=True)
+def get_keyword_from_db(cursor):
     keyword_query = "SELECT * FROM keywords WHERE (bot_id=%s AND is_extracted=%s)"
-    db_cursor.execute(keyword_query, (bot_id, 0))
-    result = db_cursor.fetchone()
-    # db_cursor.close()
+    cursor.execute(keyword_query, (bot_id, 0))
+    result = cursor.fetchone()
 
     return result
 
@@ -52,3 +53,12 @@ def update_sub_reddit_and_keywords(db_connection, sub_reddit_id):
         db_cursor.close()
     except Exception as e:
         log(f"Failed updating sub_reddit and keyword with error : {e}", constants.msg_error)
+
+
+def update_keyword_is_extracted_status(db_connection, keyword_id):
+    db_cursor = db_connection.cursor(buffered=True)
+    # mark keyword as extracted
+    update_query = "UPDATE keywords SET is_extracted=%s WHERE id=%s"
+    db_cursor.execute(update_query, (1, keyword_id))
+    db_connection.commit()
+    db_cursor.close()

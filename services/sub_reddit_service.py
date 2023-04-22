@@ -21,12 +21,39 @@ def sub_reddit(db_connection):
 
         return sub_reddit_details
     else:
-        lock_subreddit(db_connection)
+        result = get_un_extracted_sub_reddit(db_connection)
+        if result is not None:
+            lock_subreddit(db_connection, result[0])
+        else:
+            cursor = db_connection.cursor(buffered=True)
+            update_subreddit_query = "UPDATE sub_reddits SET is_extracted=%s WHERE bot_id=%s"
+            details = (0, bot_id)
+            cursor.execute(update_subreddit_query, details)
+            db_connection.commit()
+
+            result = get_un_extracted_sub_reddit(db_connection)
+
+            lock_subreddit(db_connection, result[0])
 
         sub_reddit_details = get_locked_subreddit_from_db(db_connection)
         log(f"sub reddit name {sub_reddit_details['sub_reddit_name']}", constants.msg_info)
 
         return sub_reddit_details
+
+
+def lock_subreddit(db_connection, sub_reddit_id):
+    update_sub_reddit_query = "UPDATE sub_reddits SET is_locked=%s WHERE id=%s"
+    record_details = (1, sub_reddit_id)
+    # try updating the record
+    try:
+        update_cursor = db_connection.cursor(buffered=True)
+        update_cursor.execute(update_sub_reddit_query, record_details)
+        db_connection.commit()
+        update_cursor.close()
+    except Exception as e:
+        log(f"An exception occurred {e}", constants.msg_error)
+        # Rolling back in case of error
+        db_connection.rollback()
 
 
 # get one subreddit and set it to locked status.
@@ -51,28 +78,6 @@ def get_locked_subreddit_from_db(db_connection):
     }
 
 
-def lock_subreddit(db_connection):
-    db_cursor = db_connection.cursor(buffered=True)
-    sub_reddit_query = "SELECT * FROM sub_reddits WHERE (bot_id=%s AND is_extracted=%s)"
-    db_cursor.execute(sub_reddit_query, (bot_id, 0))
-    result = db_cursor.fetchone()
-    if result is not None:
-        sub_reddit_id = result[0]
-        db_cursor.close()
-        update_sub_reddit_query = "UPDATE sub_reddits SET is_locked=%s WHERE id=%s"
-        record_details = (1, sub_reddit_id)
-        # try updating the record
-        try:
-            update_cursor = db_connection.cursor(buffered=True)
-            update_cursor.execute(update_sub_reddit_query, record_details)
-            db_connection.commit()
-            update_cursor.close()
-        except Exception as e:
-            log(f"An exception occurred {e}", constants.msg_error)
-            # Rolling back in case of error
-            db_connection.rollback()
-
-
 def check_if_locked_sub_reddit_exists(db_connection, _bot_id):
     db_cursor = db_connection.cursor(buffered=True)
     check_locked_status_query = "SELECT COUNT(*) FROM sub_reddits WHERE (bot_id=%s AND  is_locked=%s)"
@@ -83,3 +88,11 @@ def check_if_locked_sub_reddit_exists(db_connection, _bot_id):
         return 0
     else:
         return 1
+
+
+def get_un_extracted_sub_reddit(db_connection):
+    db_cursor = db_connection.cursor(buffered=True)
+    sub_reddit_query = "SELECT * FROM sub_reddits WHERE (bot_id=%s AND is_extracted=%s)"
+    db_cursor.execute(sub_reddit_query, (bot_id, 0))
+
+    return db_cursor.fetchone()
