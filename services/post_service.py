@@ -9,7 +9,7 @@ load_dotenv()
 bot_id = os.environ.get('BOT_ID')
 
 
-def update_database(db_connection, record_id, param):
+def update_submission_or_comment(db_connection, record_id, param):
     log("Updating db", constants.msg_info)
     db_cursor = db_connection.cursor()
     query = ''
@@ -21,7 +21,7 @@ def update_database(db_connection, record_id, param):
     current_data_time = datetime.now()
     date = current_data_time.strftime("%Y-%m-%d %H:%M")
     update_details = (1, 1, date, bot_id, record_id)
-    # try saving the data
+    # try updating the data
     db_cursor.execute(query, update_details)
     db_connection.commit()
     log("Updated db", constants.msg_info)
@@ -41,7 +41,7 @@ def send_replies_and_upvote(reddit, db_connection):
         submission = reddit.submission(sub_id)
         # submission.upvote()
         # submission.reply("Hello there Mumbai")
-        update_database(db_connection, sub_id, "submission")
+        update_submission_or_comment(db_connection, sub_id, "submission")
 
     # handle comments
     if len(comment_ids) > 0:
@@ -49,7 +49,7 @@ def send_replies_and_upvote(reddit, db_connection):
         comment = reddit.comment(comment_id)
         # comment.upvote()
         # comment.reply()
-        update_database(db_connection, comment_id, "comment")
+        update_submission_or_comment(db_connection, comment_id, "comment")
 
 
 def get_submission_ids(db_connection, type_name):

@@ -37,6 +37,7 @@ def get_keyword_from_db(cursor):
     cursor.execute(keyword_query, (bot_id, 0))
     result = cursor.fetchone()
 
+    log(f"Key word: {result}", constants.msg_error)
     return result
 
 

@@ -75,7 +75,7 @@ def check_keyword_from_comments(comment, keyword):
 
 # delete text files from the system
 def delete_data_files():
-    log("Removing data files", constants.msg_info)
+    log("Removing data files...", constants.msg_info)
     os.remove(constants.submission_file)
     os.remove(constants.comment_file)
-    log("Removed data files", constants.msg_info)
+    log("Removed data files!", constants.msg_info)

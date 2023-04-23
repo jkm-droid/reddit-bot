@@ -50,7 +50,6 @@ def save_records(db_connection, category):
                 db_cursor.execute(query, record_details)
                 db_connection.commit()
 
-        # close the connections
         db_cursor.close()
     else:
         log("No data files were found", constants.msg_info)
@@ -65,6 +64,7 @@ def check_if_record_exists(db_cursor, _bot_id, item_id, item_type):
 
     db_cursor.execute(query, (_bot_id, item_id))
     item = db_cursor.fetchone()
+    db_cursor.close()
     if item:
         return 1
     else:
@@ -82,5 +82,6 @@ def count_db_records(db_connection):
     db_cursor.execute(comment_query, (0, 0))
     result = db_cursor.fetchone()
     com_count = result[0]
+    db_cursor.close()
 
     return sub_count + com_count

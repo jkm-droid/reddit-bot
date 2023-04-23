@@ -33,7 +33,7 @@ def main():
 
                     # extract submission and comment ids
                     # save the ids in a text file
-                    reddit_service.extract_data_from_reddit(reddit, "Genshin_Impact", "Impact")
+                    reddit_service.extract_data_from_reddit(reddit, sub_reddit_name, keyword_name)
 
                     # read data from text file and insert/update db
                     database_service.save_data_to_db(db_connection)
