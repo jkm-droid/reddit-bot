@@ -23,7 +23,7 @@ def sub_reddit(db_connection):
     else:
         result = get_un_extracted_sub_reddit(db_connection)
         if result is not None:
-            lock_subreddit(db_connection, result[0])
+            lock_subreddit(db_connection, result['id'])
         else:
             cursor = db_connection.cursor(buffered=True)
             update_subreddit_query = "UPDATE sub_reddits SET is_extracted=%s WHERE bot_id=%s"
@@ -60,14 +60,14 @@ def lock_subreddit(db_connection, sub_reddit_id):
 # Extract data from the sub_reddit by looping all
 # through the keywords and setting extracted status to true once extracted
 def get_locked_subreddit_from_db(db_connection):
-    db_cursor = db_connection.cursor(buffered=True)
+    db_cursor = db_connection.cursor(buffered=True, dictionary=True)
     sub_reddit_query = "SELECT * FROM sub_reddits WHERE (bot_id=%s AND is_extracted=%s AND  is_locked=%s)"
     db_cursor.execute(sub_reddit_query, (bot_id, 0, 1))
     response = db_cursor.fetchone()
-    sub_id = response[0]
-    name = response[2]
-    is_extracted = response[3]
-    is_locked = response[6]
+    sub_id = response['id']
+    name = response['name']
+    is_extracted = response['is_extracted']
+    is_locked = response['is_locked']
     db_cursor.close()
 
     return {
@@ -91,7 +91,7 @@ def check_if_locked_sub_reddit_exists(db_connection, _bot_id):
 
 
 def get_un_extracted_sub_reddit(db_connection):
-    db_cursor = db_connection.cursor(buffered=True)
+    db_cursor = db_connection.cursor(buffered=True, dictionary=True)
     sub_reddit_query = "SELECT * FROM sub_reddits WHERE (bot_id=%s AND is_extracted=%s)"
     db_cursor.execute(sub_reddit_query, (bot_id, 0))
 

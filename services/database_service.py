@@ -85,3 +85,11 @@ def count_db_records(db_connection):
     db_cursor.close()
 
     return sub_count + com_count
+
+
+def count_item_in_db(db_conn, item_table):
+    cursor = db_conn.cursor(buffered=True)
+    query = f"SELECT COUNT(*) FROM {item_table} WHERE bot_id=%s"
+    cursor.execute(query, [bot_id])
+
+    return cursor.fetchone()

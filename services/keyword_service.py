@@ -13,13 +13,13 @@ bot_user_id = os.environ.get('BOT_USER_ID')
 
 
 def keyword(db_connection, sub_reddit_id):
-    db_cursor = db_connection.cursor(buffered=True)
+    db_cursor = db_connection.cursor(buffered=True, dictionary=True)
     keyword_result = get_keyword_from_db(db_cursor)
     if keyword_result is not None:
-        update_keyword_is_extracted_status(db_connection, keyword_result[0])
+        update_keyword_is_extracted_status(db_connection, keyword_result['id'])
         db_cursor.close()
         # return keyword name
-        return keyword_result[2]
+        return keyword_result['name']
     else:
         # mark keywords as un-extracted and sub_reddit as extracted
         update_sub_reddit_and_keywords(db_connection, sub_reddit_id)
@@ -27,9 +27,9 @@ def keyword(db_connection, sub_reddit_id):
         _result = get_keyword_from_db(db_cursor)
         db_cursor.close()
         # set extracted status to true
-        update_keyword_is_extracted_status(db_connection, _result[0])
+        update_keyword_is_extracted_status(db_connection, _result['id'])
 
-        return _result[2]
+        return _result['name']
 
 
 def get_keyword_from_db(cursor):
