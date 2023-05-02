@@ -6,6 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 from constants import constants
+from logger import log
 from services import database_service
 
 load_dotenv()
@@ -67,7 +68,6 @@ def check_all_bot_tables_for_data(db_conn):
         cursor.execute(query, (1, bot_id))
         db_conn.commit()
         cursor.close()
-
         return {
             "initialized": 1,
             "errors": errors

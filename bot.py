@@ -1,17 +1,16 @@
 import time
 
-from services import post_service, reddit_service, database_service, sub_reddit_service, keyword_service, bot_service
-from configs.config import create_reddit
 from configs.database import create_db_connection
-from logger import log
 from constants import constants
+from logger import log
+from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service
 
 
 def main():
     log("connecting to api...please wait", constants.msg_info)
 
     # establish connection to reddit
-    reddit = True # create_reddit()
+    reddit = True  # create_reddit()
     if reddit:
         # log(f"connected as {reddit.user.me()}", constants.msg_info)
         while True:
