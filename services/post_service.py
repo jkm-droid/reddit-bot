@@ -40,7 +40,8 @@ def send_replies_and_upvote(reddit, db_connection):
         sub_id = random.choice(submission_ids)
         submission = reddit.submission(sub_id)
         # submission.upvote()
-        # submission.reply("Hello there Mumbai")
+        submission_reply = get_reddit_reply_from_db(db_connection)
+        # submission.reply(submission_reply)
         update_submission_or_comment(db_connection, sub_id, "submission")
 
     # handle comments
@@ -48,21 +49,71 @@ def send_replies_and_upvote(reddit, db_connection):
         comment_id = random.choice(comment_ids)
         comment = reddit.comment(comment_id)
         # comment.upvote()
-        # comment.reply()
+        comment_reply = get_reddit_reply_from_db(db_connection)
+        # comment.reply(comment_reply)
         update_submission_or_comment(db_connection, comment_id, "comment")
 
 
 def get_submission_ids(db_connection, type_name):
-    db_cursor = db_connection.cursor()
+    db_cursor = db_connection.cursor(buffered=True, dictionary=True)
     query = ''
     if type_name == constants.submission_category:
-        query = "SELECT submission_id FROM submissions WHERE is_replied=0 LIMIT 10"
+        query = "SELECT submission_id FROM submissions WHERE is_replied=%s LIMIT 10"
     elif type_name == constants.comment_category:
-        query = "SELECT comment_id FROM comments WHERE is_replied=0 LIMIT 10"
-    db_cursor.execute(query)
+        query = "SELECT comment_id FROM comments WHERE is_replied=%s LIMIT 10"
+    db_cursor.execute(query, [0])
     items = db_cursor.fetchall()
     ids = []
     for row in items:
-        ids.append(row[0])
+        ids.append(row['id'])
 
     return ids
+
+
+def get_reddit_reply_from_db(db_connection):
+    record = get_item(db_connection)
+    if record is not None:
+        # set selected reply
+        update_item(db_connection, record['id'])
+
+        return record['description']
+    else:
+        # update all reddit replies status to 0
+        try:
+            update_cursor = db_connection.cursor(buffered=True)
+            update_all_query = "UPDATE reddit_replies SET is_replied=%s WHERE bot_id=%s"
+            update_cursor.execute(update_all_query, [0, bot_id])
+            db_connection.commit()
+            update_cursor.close()
+        except Exception as e:
+            log(f"An exception occurred updating all reddit replies for bot {bot_id} {e}", constants.msg_error)
+            # Rolling back in case of error
+            db_connection.rollback()
+
+        record = get_item(db_connection)
+        update_item(db_connection, record['id'])
+
+        return record['description']
+
+
+def get_item(db_connection):
+    db_cursor = db_connection.cursor(buffered=True, dictionary=True)
+    query = "SELECT id,description FROM reddit_replies WHERE (is_replied=%s AND bot_id=%s) LIMIT 1"
+    db_cursor.execute(query, [0, bot_id])
+    record = db_cursor.fetchone()
+    db_cursor.close()
+
+    return record
+
+
+def update_item(db_connection, item_id):
+    db_cursor = db_connection.cursor(buffered=True)
+    try:
+        update_query = "UPDATE reddit_replies SET is_replied=%s WHERE id=%s"
+        db_cursor.execute(update_query, (1, item_id))
+        db_connection.commit()
+        db_cursor.close()
+    except Exception as e:
+        log(f"An exception occurred updating reddit reply {e}", constants.msg_error)
+        # Rolling back in case of error
+        db_connection.rollback()

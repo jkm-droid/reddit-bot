@@ -3,7 +3,7 @@ import time
 from configs.database import create_db_connection
 from constants import constants
 from logger import log
-from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service
+from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service, post_service
 
 
 def main():
@@ -52,7 +52,7 @@ def main():
                     else:
                         log("inside post worker", constants.msg_info)
                         # get data from db and start sending replies
-                        # post_service.send_replies_and_upvote(reddit, db_connection)
+                        post_service.send_replies_and_upvote(reddit, db_connection)
 
                     log("Sleeping in main", constants.msg_info)
                     log("\n", constants.msg_info)
