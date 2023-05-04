@@ -24,6 +24,7 @@ def save_records(db_connection, category):
     db_cursor = db_connection.cursor()
     record_ids = []
     query = ''
+    target_table = ''
     if os.path.isfile(constants.submission_file) or os.path.isfile(constants.comment_file):
         if category == constants.submission_category and os.path.isfile(constants.submission_file):
             log("Saving submissions data to db", constants.msg_info)
@@ -31,6 +32,7 @@ def save_records(db_connection, category):
             record_ids = list(submission_file)
             # prepare the query and data
             query = "INSERT INTO submissions (bot_id,submission_id,created_at) VALUES (%s,%s,%s)"
+            target_table = constants.submission_category
 
         elif category == constants.comment_category and os.path.isfile(constants.comment_file):
             log("Saving comments data to db", constants.msg_info)
@@ -38,10 +40,11 @@ def save_records(db_connection, category):
             record_ids = list(comment_file)
             # prepare the query and data
             query = "INSERT INTO comments (bot_id,comment_id,created_at) VALUES (%s,%s,%s)"
+            target_table = constants.comment_category
 
         for record_id in record_ids:
             # ensure no duplicates
-            check = check_if_record_exists(db_cursor, bot_id, record_id, "submission")
+            check = check_if_record_exists(db_cursor, bot_id, record_id, target_table)
             if check == 0:
                 current_data_time = datetime.now()
                 date = current_data_time.strftime("%Y-%m-%d %H:%M")
