@@ -17,6 +17,10 @@ def extract_data_from_reddit(reddit, sub_name, keyword):
     log(f"[{constants.sub_hot}] submission", constants.msg_info)
     check_keyword_from_submissions(reddit, sub_name, keyword, "hot")
 
+    # check keyword across subreddit's new submissions
+    log(f"[{constants.sub_new}] submission", constants.msg_info)
+    check_keyword_from_submissions(reddit, sub_name, keyword, "new")
+
     # check keyword across subreddit's comments
     log(f"checking comment", constants.msg_info)
     for comment in reddit.subreddit(sub_name).comments(limit=1000):
@@ -74,8 +78,7 @@ def check_keyword_from_comments(comment, keyword):
 
 
 # delete text files from the system
-def delete_data_files():
-    log("Removing data files...", constants.msg_info)
-    os.remove(constants.submission_file)
-    os.remove(constants.comment_file)
-    log("Removed data files!", constants.msg_info)
+def delete_data_files(name, file_name):
+    if os.path.isfile(file_name):
+        log(f"Removing {name} data files...", constants.msg_info)
+        os.remove(file_name)

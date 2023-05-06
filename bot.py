@@ -7,8 +7,11 @@ from constants import constants
 from logger import log
 from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service, post_service
 
+bot_should_sleep = True
+
 
 def main():
+    global bot_should_sleep
     log("connecting to api...please wait", constants.msg_info)
 
     # establish connection to reddit
@@ -51,24 +54,25 @@ def main():
                             database_service.save_submission_data_to_db(db_connection)
 
                             # remove files
-                            reddit_service.delete_data_files()
+                            reddit_service.delete_data_files("submission", constants.submission_file)
                         elif os.path.isfile(constants.comment_file):
                             # read data from text file and insert/update db
                             database_service.save_comment_data_to_db(db_connection)
 
                             # remove files
-                            reddit_service.delete_data_files()
+                            reddit_service.delete_data_files("comment", constants.comment_file)
                         else:
                             log("No submission/comment data files were found", constants.msg_info)
-                            break
+                            bot_should_sleep = False
                     else:
                         log("inside post worker", constants.msg_info)
                         # get data from db and start sending replies
                         post_service.send_replies_and_upvote(reddit, db_connection)
 
-                    log("Sleeping in main", constants.msg_info)
-                    log("\n", constants.msg_info)
-                    time.sleep(50)
+                    if bot_should_sleep:
+                        log("Sleeping in main", constants.msg_info)
+                        log("\n", constants.msg_info)
+                        time.sleep(50)
                 else:
                     log("An error occurred when initializing bot", constants.msg_error)
             except Exception as e:
