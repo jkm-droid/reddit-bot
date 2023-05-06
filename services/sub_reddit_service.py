@@ -17,7 +17,6 @@ def sub_reddit(db_connection):
 
     if check == 1:
         sub_reddit_details = get_locked_subreddit_from_db(db_connection)
-        log(f"sub reddit name {sub_reddit_details['sub_reddit_name']}", constants.msg_info)
 
         return sub_reddit_details
     else:
@@ -36,7 +35,6 @@ def sub_reddit(db_connection):
             lock_subreddit(db_connection, result[0])
 
         sub_reddit_details = get_locked_subreddit_from_db(db_connection)
-        log(f"sub reddit name {sub_reddit_details['sub_reddit_name']}", constants.msg_info)
 
         return sub_reddit_details
 

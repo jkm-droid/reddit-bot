@@ -1,5 +1,7 @@
+import os
 import time
 
+from configs.config import create_reddit
 from configs.database import create_db_connection
 from constants import constants
 from logger import log
@@ -10,7 +12,7 @@ def main():
     log("connecting to api...please wait", constants.msg_info)
 
     # establish connection to reddit
-    reddit = True  # create_reddit()
+    reddit = create_reddit()
     if reddit:
         # log(f"connected as {reddit.user.me()}", constants.msg_info)
         while True:
@@ -35,7 +37,7 @@ def main():
                         sub_reddit_details = sub_reddit_service.sub_reddit(db_connection)
                         sub_reddit_id = sub_reddit_details["sub_reddit_id"]
                         sub_reddit_name = sub_reddit_details["sub_reddit_name"]
-                        log(f"Sub reddit : {sub_reddit_details}", constants.msg_info)
+                        log(f"Sub reddit : {sub_reddit_name}", constants.msg_info)
                         # get keyword
                         keyword_name = keyword_service.keyword(db_connection, sub_reddit_id)
                         log(f"Keyword : {keyword_name}", constants.msg_info)
@@ -44,11 +46,21 @@ def main():
                         # save the ids in a text file
                         reddit_service.extract_data_from_reddit(reddit, sub_reddit_name, keyword_name)
 
-                        # read data from text file and insert/update db
-                        database_service.save_data_to_db(db_connection)
+                        if os.path.isfile(constants.submission_file):
+                            # read data from text file and insert/update db
+                            database_service.save_submission_data_to_db(db_connection)
 
-                        # remove files
-                        reddit_service.delete_data_files()
+                            # remove files
+                            reddit_service.delete_data_files()
+                        elif os.path.isfile(constants.comment_file):
+                            # read data from text file and insert/update db
+                            database_service.save_comment_data_to_db(db_connection)
+
+                            # remove files
+                            reddit_service.delete_data_files()
+                        else:
+                            log("No submission/comment data files were found", constants.msg_info)
+                            break
                     else:
                         log("inside post worker", constants.msg_info)
                         # get data from db and start sending replies
