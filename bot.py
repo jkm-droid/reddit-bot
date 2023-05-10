@@ -17,7 +17,7 @@ def main():
     # establish connection to reddit
     reddit = create_reddit()
     if reddit:
-        # log(f"connected as {reddit.user.me()}", constants.msg_info)
+        log(f"connected as {reddit.user.me()}", constants.msg_info)
         while True:
             try:
                 # establish db connection
@@ -78,7 +78,7 @@ def main():
                     if bot_should_sleep:
                         log("Sleeping in main", constants.msg_info)
                         log("\n", constants.msg_info)
-                        time.sleep(50)
+                        time.sleep(60)
                 else:
                     log("An error occurred when initializing bot", constants.msg_error)
             except Exception as e:

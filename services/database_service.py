@@ -70,7 +70,6 @@ def check_if_record_exists(db_cursor, _bot_id, item_id, item_type):
 
     db_cursor.execute(query, (_bot_id, item_id))
     item = db_cursor.fetchone()
-    db_cursor.close()
     if item is not None:
         return 1
     else:
