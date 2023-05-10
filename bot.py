@@ -35,14 +35,19 @@ def main():
                     count = database_service.count_db_records(db_connection)
                     log(f"Current records: {count}", constants.msg_info)
                     if count == 0:
-                        log("inside reddit worker", constants.msg_info)
                         # get sub_reddit and keyword
                         sub_reddit_details = sub_reddit_service.sub_reddit(db_connection)
                         sub_reddit_id = sub_reddit_details["sub_reddit_id"]
                         sub_reddit_name = sub_reddit_details["sub_reddit_name"]
                         log(f"Sub reddit : {sub_reddit_name}", constants.msg_info)
+
                         # get keyword
-                        keyword_name = keyword_service.keyword(db_connection, sub_reddit_id)
+                        keyword_result = keyword_service.keyword(db_connection, sub_reddit_id)
+                        keyword_name = keyword_result['keyword_name']
+                        if keyword_result['set_to_default'] == 1:
+                            sub_reddit_name = keyword_result['sub_reddit_name']
+                            log(f"Sub reddit after resetting to default : {sub_reddit_name}", constants.msg_info)
+
                         log(f"Keyword : {keyword_name}", constants.msg_info)
 
                         # extract submission and comment ids
@@ -63,6 +68,7 @@ def main():
                             reddit_service.delete_data_files("comment", constants.comment_file)
                         else:
                             log("No submission/comment data files were found", constants.msg_info)
+                            log("***===============*******================***", constants.msg_info)
                             bot_should_sleep = False
                     else:
                         log("inside post worker", constants.msg_info)

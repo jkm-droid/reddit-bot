@@ -57,8 +57,8 @@ def check_all_bot_tables_for_data(db_conn):
     if sub_reddits <= 4:
         errors.append(f"insufficient sub reddits in db. add {5 - sub_reddits} more sub reddit to proceed")
 
-    # if reddit_replies <= 4:
-    #     errors.append(f"insufficient reddit replies in db. add {5 - reddit_replies} more reddit replies to proceed")
+    if reddit_replies <= 4:
+        errors.append(f"insufficient reddit replies in db. add {5 - reddit_replies} more reddit replies to proceed")
 
     if len(errors) > 0:
         save_initialization_errors_to_file(errors)
