@@ -51,25 +51,9 @@ def main():
                         log(f"Keyword : {keyword_name}", constants.msg_info)
 
                         # extract submission and comment ids
-                        # save the ids in a text file
-                        reddit_service.extract_data_from_reddit(reddit, sub_reddit_name, keyword_name)
-
-                        if os.path.isfile(constants.submission_file):
-                            # read data from text file and insert/update db
-                            database_service.save_submission_data_to_db(db_connection)
-
-                            # remove files
-                            reddit_service.delete_data_files("submission", constants.submission_file)
-                        elif os.path.isfile(constants.comment_file):
-                            # read data from text file and insert/update db
-                            database_service.save_comment_data_to_db(db_connection)
-
-                            # remove files
-                            reddit_service.delete_data_files("comment", constants.comment_file)
-                        else:
-                            log("No submission/comment data files were found", constants.msg_info)
-                            log("***===============*******================***", constants.msg_info)
-                            bot_should_sleep = False
+                        # save the ids in the db
+                        reddit_service.extract_data_from_reddit(reddit, db_connection, sub_reddit_name, keyword_name)
+                        bot_should_sleep = False
                     else:
                         log("inside post worker", constants.msg_info)
                         # get data from db and start sending replies

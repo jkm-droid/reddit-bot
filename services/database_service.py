@@ -11,61 +11,46 @@ bot_user_id = os.environ.get('BOT_USER_ID')
 
 
 # Save the collected data to db
-def save_submission_data_to_db(db_connection):
-    # save submissions
-    save_records(db_connection, constants.submission_category)
-    db_connection.close()
-    log("Saved submissions data to db", constants.msg_info)
-
-
-# Save the collected data to db
-def save_comment_data_to_db(db_connection):
-    # save comments
-    save_records(db_connection, constants.comment_category)
-    db_connection.close()
-    log("Saved comments data to db", constants.msg_info)
-
-
-def save_records(db_connection, category):
+def save_submission_and_comment_data_to_db(db_connection, category, extracted_data):
+    # save submissions/comments
     db_cursor = db_connection.cursor()
-    record_ids = []
     query = ''
     target_table = ''
-    if category == constants.submission_category and os.path.isfile(constants.submission_file):
+    if category == constants.submission_category:
         log("Saving submissions data to db", constants.msg_info)
-        submission_file = open(constants.submission_file, 'r').read().splitlines()
-        record_ids = list(submission_file)
         # prepare the query and data
         query = "INSERT INTO submissions (bot_id,submission_id,created_at) VALUES (%s,%s,%s)"
         target_table = constants.submission_category
 
-    elif category == constants.comment_category and os.path.isfile(constants.comment_file):
+    elif category == constants.comment_category:
         log("Saving comments data to db", constants.msg_info)
-        comment_file = open(constants.comment_file, 'r').read().splitlines()
-        record_ids = list(comment_file)
         # prepare the query and data
         query = "INSERT INTO comments (bot_id,comment_id,created_at) VALUES (%s,%s,%s)"
         target_table = constants.comment_category
 
-    for record_id in record_ids:
-        # ensure no duplicates
-        check = check_if_record_exists(db_cursor, bot_id, record_id, target_table)
-        if check == 0:
-            current_data_time = datetime.now()
-            date = current_data_time.strftime("%Y-%m-%d %H:%M")
-            record_details = (bot_id, record_id, date)
-            # try saving the data
-            db_cursor.execute(query, record_details)
-            db_connection.commit()
+    # ensure no duplicates
+    record_id = extracted_data['record_id']
+    check = check_if_record_exists(db_cursor, bot_id, record_id, target_table)
+    if check == 0:
+        current_data_time = datetime.now()
+        date = current_data_time.strftime("%Y-%m-%d %H:%M")
+        record_details = (bot_id, record_id, extracted_data['content'], date)
+        # try saving the data
+        db_cursor.execute(query, record_details)
+        db_connection.commit()
 
-    db_cursor.close()
+        db_cursor.close()
+        db_connection.close()
+        log(f"Saved {category} data to db", constants.msg_info)
+    else:
+        return
 
 
-def check_if_record_exists(db_cursor, _bot_id, item_id, item_type):
+def check_if_record_exists(db_cursor, _bot_id, item_id, item_table):
     query = ''
-    if item_type == constants.submission_category:
+    if item_table == constants.submission_category:
         query = "SELECT submission_id FROM submissions WHERE (bot_id=%s AND  submission_id=%s)"
-    elif item_type == constants.comment_category:
+    elif item_table == constants.comment_category:
         query = "SELECT comment_id FROM comments WHERE (bot_id=%s AND  comment_id=%s)"
 
     db_cursor.execute(query, (_bot_id, item_id))
