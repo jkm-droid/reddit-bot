@@ -17,15 +17,15 @@ def save_submission_and_comment_data_to_db(db_connection, category, extracted_da
     query = ''
     target_table = ''
     if category == constants.submission_category:
-        log("Saving submissions data to db", constants.msg_info)
+        log(f"Saving submission {extracted_data['record_id']} data to db...", constants.msg_info)
         # prepare the query and data
-        query = "INSERT INTO submissions (bot_id,submission_id,created_at) VALUES (%s,%s,%s)"
+        query = "INSERT INTO submissions (bot_id,submission_id, content,created_at) VALUES (%s,%s,%s,%s)"
         target_table = constants.submission_category
 
     elif category == constants.comment_category:
-        log("Saving comments data to db", constants.msg_info)
+        log(f"Saving comment {extracted_data['record_id']} data to db...", constants.msg_info)
         # prepare the query and data
-        query = "INSERT INTO comments (bot_id,comment_id,created_at) VALUES (%s,%s,%s)"
+        query = "INSERT INTO comments (bot_id,comment_id, content,created_at) VALUES (%s,%s,%s,%s)"
         target_table = constants.comment_category
 
     # ensure no duplicates
@@ -36,12 +36,14 @@ def save_submission_and_comment_data_to_db(db_connection, category, extracted_da
         date = current_data_time.strftime("%Y-%m-%d %H:%M")
         record_details = (bot_id, record_id, extracted_data['content'], date)
         # try saving the data
-        db_cursor.execute(query, record_details)
-        db_connection.commit()
+        try:
+            db_cursor.execute(query, record_details)
+            db_connection.commit()
+        except Exception as e:
+            log(f"An exception occurred when saving extracted {category} {extracted_data} {e}", constants.msg_error)
 
         db_cursor.close()
-        db_connection.close()
-        log(f"Saved {category} data to db", constants.msg_info)
+        log(f"Saved {category} {record_id} to db", constants.msg_info)
     else:
         return
 

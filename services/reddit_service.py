@@ -10,14 +10,14 @@ from services.database_service import save_submission_and_comment_data_to_db
 
 
 def extract_data_from_reddit(reddit, db_conn, sub_name, keyword):
-    log("extracting data...please wait", constants.msg_info)
+    log("extracting data...", constants.msg_info)
 
     # check keyword across subreddit's submissions
-    log(f"checking submission", constants.msg_info)
+    log(f"checking submission...", constants.msg_info)
     check_keyword_from_submissions(reddit, db_conn, sub_name, keyword)
 
     # check keyword across subreddit's comments
-    log(f"checking comment", constants.msg_info)
+    log(f"checking comment...", constants.msg_info)
     check_keyword_from_comments(reddit, db_conn, sub_name, keyword)
 
 

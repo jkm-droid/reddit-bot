@@ -68,6 +68,7 @@ def update_sub_reddit_and_keywords(db_connection, sub_reddit_id):
         db_cursor.close()
     except Exception as e:
         log(f"Failed updating sub_reddit and keyword with error : {e}", constants.msg_error)
+        db_connection.rollback()
 
 
 def update_keyword_is_extracted_status(db_connection, keyword_id):
@@ -76,6 +77,10 @@ def update_keyword_is_extracted_status(db_connection, keyword_id):
     update_query = "UPDATE keywords SET is_extracted=%s, updated_at=%s WHERE id=%s"
     current_data_time = datetime.now()
     date = current_data_time.strftime("%Y-%m-%d %H:%M")
-    db_cursor.execute(update_query, (1, date, keyword_id))
-    db_connection.commit()
-    db_cursor.close()
+    try:
+        db_cursor.execute(update_query, (1, date, keyword_id))
+        db_connection.commit()
+        db_cursor.close()
+    except Exception as e:
+        log(f"Failed updating keyword is_ extracted status with error : {e}", constants.msg_error)
+        db_connection.rollback()

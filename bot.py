@@ -7,12 +7,11 @@ from constants import constants
 from logger import log
 from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service, post_service
 
-bot_should_sleep = True
+
 
 
 def main():
-    global bot_should_sleep
-    log("connecting to api...please wait", constants.msg_info)
+    log("connecting to reddit api...", constants.msg_info)
 
     # establish connection to reddit
     reddit = create_reddit()
@@ -20,10 +19,11 @@ def main():
         log(f"connected as {reddit.user.me()}", constants.msg_info)
         while True:
             try:
+                bot_should_sleep = True
                 # establish db connection
                 log("connecting to db...", constants.msg_info)
                 db_connection = create_db_connection()
-                log("initializing bot...", constants.msg_info)
+                log("Initializing bot...", constants.msg_info)
                 result = bot_service.initialize_bot(db_connection)
                 init_msg = result['initialized']
                 if init_msg == 0:
@@ -31,7 +31,7 @@ def main():
                         constants.msg_error)
                     break
                 elif init_msg == 1:
-                    log("initialized bot successfully", constants.msg_info)
+                    log("Initialized bot successfully", constants.msg_info)
                     count = database_service.count_db_records(db_connection)
                     log(f"Current records: {count}", constants.msg_info)
                     if count == 0:
@@ -53,12 +53,13 @@ def main():
                         # extract submission and comment ids
                         # save the ids in the db
                         reddit_service.extract_data_from_reddit(reddit, db_connection, sub_reddit_name, keyword_name)
+                        db_connection.close()
                         bot_should_sleep = False
                     else:
-                        log("inside post worker", constants.msg_info)
+                        log("Inside post worker", constants.msg_info)
                         # get data from db and start sending replies
                         post_service.send_replies_and_upvote(reddit, db_connection)
-
+                        db_connection.close()
                     if bot_should_sleep:
                         log("Sleeping in main", constants.msg_info)
                         log("\n", constants.msg_info)
