@@ -1,10 +1,10 @@
 import os
-import mysql.connector as mysql
-from constants import constants
 
+import mysql.connector as mysql
 from dotenv import load_dotenv
 from mysql.connector import errorcode
-from logger import log
+
+from logger import _logger
 
 # load env variables
 load_dotenv()
@@ -26,12 +26,12 @@ def create_db_connection():
             user=user,
             password=password)
 
-        log("Db connection established successfully", constants.msg_info)
+        _logger().info("Db connection established successfully")
         return connection
     except mysql.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            log("Access denied:Please recheck your username/password", constants.msg_info)
+            _logger().error("Access denied:Please recheck your username/password", exc_info=True)
         elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            log("Database does not exist", constants.msg_info)
+            _logger().error("Database does not exist", exc_info=True)
         else:
-            log(err, constants.msg_info)
+            _logger().error(err, exc_info=True)

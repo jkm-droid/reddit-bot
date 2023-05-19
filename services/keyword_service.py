@@ -3,9 +3,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 
-import constants.constants
-from logger import log
-from constants import constants
+from logger import _logger
 from services import sub_reddit_service
 
 load_dotenv()
@@ -67,7 +65,7 @@ def update_sub_reddit_and_keywords(db_connection, sub_reddit_id):
         db_connection.commit()
         db_cursor.close()
     except Exception as e:
-        log(f"Failed updating sub_reddit and keyword with error : {e}", constants.msg_error)
+        _logger().error(f"Failed updating sub_reddit and keyword with error : {e}", exc_info=True)
         db_connection.rollback()
 
 
@@ -82,5 +80,5 @@ def update_keyword_is_extracted_status(db_connection, keyword_id):
         db_connection.commit()
         db_cursor.close()
     except Exception as e:
-        log(f"Failed updating keyword is_ extracted status with error : {e}", constants.msg_error)
+        _logger().error(f"Failed updating keyword is_ extracted status with error : {e}", exc_info=True)
         db_connection.rollback()

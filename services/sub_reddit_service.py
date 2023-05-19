@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from logger import log
+from logger import _logger
 from constants import constants
 
 load_dotenv()
@@ -49,7 +49,7 @@ def lock_subreddit(db_connection, sub_reddit_id):
         db_connection.commit()
         update_cursor.close()
     except Exception as e:
-        log(f"An exception occurred {e}", constants.msg_error)
+        _logger().error(f"An exception occurred {e}", exc_info=True)
         # Rolling back in case of error
         db_connection.rollback()
 

@@ -1,19 +1,25 @@
 import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-
-
-def log(message, level):
-    if level == "info":
-        logger.info(message)
-    elif level == "error":
-        logger.error(message)
+import logging.config
+import yaml
 
 
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-for logger_name in ("praw", "prawcore"):
-    logger = logging.getLogger(logger_name)
+def _logger():
+    # create logger
+    logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
+
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+
+    # add ch to logger
+    if not logger.hasHandlers():
+        logger.addHandler(ch)
+
+    return logger

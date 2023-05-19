@@ -9,8 +9,6 @@ load_dotenv()
 bot_id = os.environ.get('BOT_ID')
 bot_name = os.environ.get('BOT_NAME')
 bot_target_country = os.environ.get('BOT_TARGET_COUNTRY')
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
 
 
 def initialize_bot(db_connection):

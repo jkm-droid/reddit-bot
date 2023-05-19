@@ -1,7 +1,7 @@
 import os
 import re
 from constants import constants
-from logger import log
+from logger import _logger
 from services.database_service import save_submission_and_comment_data_to_db
 
 
@@ -10,14 +10,14 @@ from services.database_service import save_submission_and_comment_data_to_db
 
 
 def extract_data_from_reddit(reddit, db_conn, sub_name, keyword):
-    log("extracting data...", constants.msg_info)
+    _logger().info("extracting data...")
 
     # check keyword across subreddit's submissions
-    log(f"checking submission...", constants.msg_info)
+    _logger().info(f"checking submission...")
     check_keyword_from_submissions(reddit, db_conn, sub_name, keyword)
 
     # check keyword across subreddit's comments
-    log(f"checking comment...", constants.msg_info)
+    _logger().info(f"checking comment...")
     check_keyword_from_comments(reddit, db_conn, sub_name, keyword)
 
 
@@ -26,13 +26,13 @@ def check_keyword_from_submissions(reddit, db_conn, sub_name, keyword):
     categories = ['hot', 'top', 'new']
     for sub_category in categories:
         if sub_category == 'hot':
-            log(f"[{constants.sub_hot}] submission", constants.msg_info)
+            _logger().info(f"[{constants.sub_hot}] submission")
             submissions = reddit.subreddit(sub_name).hot()
         elif sub_category == 'top':
-            log(f"[{constants.sub_top}] submission", constants.msg_info)
+            _logger().info(f"[{constants.sub_top}] submission")
             submissions = reddit.subreddit(sub_name).top()
         elif sub_category == 'new':
-            log(f"[{constants.sub_new}] submission", constants.msg_info)
+            _logger().info(f"[{constants.sub_new}] submission")
             submissions = reddit.subreddit(sub_name).new()
         else:
             return

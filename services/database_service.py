@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from constants import constants
-from logger import log
+from logger import _logger
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,13 +17,13 @@ def save_submission_and_comment_data_to_db(db_connection, category, extracted_da
     query = ''
     target_table = ''
     if category == constants.submission_category:
-        log(f"Saving submission {extracted_data['record_id']} data to db...", constants.msg_info)
+        _logger().info(f"Saving submission {extracted_data['record_id']} data to db...")
         # prepare the query and data
         query = "INSERT INTO submissions (bot_id,submission_id, content,created_at) VALUES (%s,%s,%s,%s)"
         target_table = constants.submission_category
 
     elif category == constants.comment_category:
-        log(f"Saving comment {extracted_data['record_id']} data to db...", constants.msg_info)
+        _logger().info(f"Saving comment {extracted_data['record_id']} data to db...")
         # prepare the query and data
         query = "INSERT INTO comments (bot_id,comment_id, content,created_at) VALUES (%s,%s,%s,%s)"
         target_table = constants.comment_category
@@ -40,10 +40,10 @@ def save_submission_and_comment_data_to_db(db_connection, category, extracted_da
             db_cursor.execute(query, record_details)
             db_connection.commit()
         except Exception as e:
-            log(f"An exception occurred when saving extracted {category} {extracted_data} {e}", constants.msg_error)
+            _logger().error(f"An exception occurred when saving extracted {category} {extracted_data} {e}")
 
         db_cursor.close()
-        log(f"Saved {category} {record_id} to db", constants.msg_info)
+        _logger().info(f"Saved {category} {record_id} to db")
     else:
         return
 
