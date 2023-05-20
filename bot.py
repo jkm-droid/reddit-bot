@@ -1,11 +1,9 @@
-import os
 import time
+
 import pyfiglet
 
-import logger
-from configs.config import create_reddit
 from configs.database import create_db_connection
-from constants import constants
+from configs.reddit import create_reddit
 from logger import _logger
 from services import reddit_service, database_service, sub_reddit_service, keyword_service, bot_service, post_service
 
@@ -29,8 +27,8 @@ def main():
                 result = bot_service.initialize_bot(db_connection)
                 init_msg = result['initialized']
                 if init_msg == 0:
-                    _logger().info("Some errors occurred when initializing bot. See more details in the error _logger().infos file",
-                        exc_info=True)
+                    _logger().info(
+                        "Some errors occurred when initializing bot. See more details in the error _logger().infos file")
                     break
                 elif init_msg == 1:
                     _logger().info("Initialized bot successfully")
@@ -71,7 +69,7 @@ def main():
                 else:
                     _logger().error("An error occurred when initializing bot")
             except Exception as e:
-                _logger().error(f"An exception occurred {e}")
+                _logger().error(f"An exception occurred {e}", exc_info=True)
                 time.sleep(300)  # 5 mins
     else:
         _logger().error("Connection could not be established")

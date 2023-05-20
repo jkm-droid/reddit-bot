@@ -1,5 +1,6 @@
-import praw
 import os
+
+import praw
 from dotenv import load_dotenv
 
 # load env variables
@@ -16,7 +17,7 @@ user_agent = "battles station by u/jkm_droid_2496"  # <platform>:<app ID>:<versi
 
 def create_reddit():
     # creat a reddit instance
-    reddit = praw.Reddit(
+    reddit_api = praw.Reddit(
         client_id=app_id,
         client_secret=app_secret,
         password=password,
@@ -24,4 +25,4 @@ def create_reddit():
         username=username
     )
 
-    return reddit
+    return reddit_api

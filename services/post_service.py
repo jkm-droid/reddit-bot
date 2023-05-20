@@ -1,7 +1,8 @@
 import os
-import random
 from datetime import datetime
+
 from dotenv import load_dotenv
+
 from constants import constants
 from logger import _logger
 
@@ -30,7 +31,7 @@ def update_submission_or_comment_with_exception_data(db_connection, item_id, ite
         db_connection.commit()
         db_cursor.close()
     except Exception as e:
-        _logger().error(f'Failed updating {item_table} with exception data. Exception {e}', exc_info=True)
+        _logger().error(f"Failed updating {item_table} with exception data. Exception {e}", exc_info=True)
         db_connection.rollback()
 
 
@@ -42,11 +43,11 @@ def send_replies_and_upvote(reddit, db_connection):
         # get a single submission
         # handle submission upvote and reply
         if submission_id is not None:
-            sub_id = f'submission_id={submission_id}'
+            sub_id = f"submission_id='{submission_id}'"
             try:
                 submission = reddit.submission(submission_id)
-                submission.upvote()
-                submission.reply(submission_reply)
+                # submission.upvote()
+                # submission.reply(submission_reply)
                 update_submission_or_comment(db_connection, sub_id, constants.submission_table)
                 _logger().info(f"Upvoted and replied to {constants.submission_category} {submission_id}")
             except Exception as e:
@@ -65,7 +66,7 @@ def send_replies_and_upvote(reddit, db_connection):
         comment_reply = get_reddit_reply_from_db(db_connection)
         # handle comments upvote and reply
         if comment_id is not None:
-            com_id = f'comment_id={comment_id}'
+            com_id = f"comment_id='{comment_id}'"
             try:
                 comment = reddit.comment(comment_id)
                 comment.upvote()
@@ -75,7 +76,8 @@ def send_replies_and_upvote(reddit, db_connection):
             except Exception as e:
                 # TODO handle comments that were not replied/up voted
                 update_submission_or_comment_with_exception_data(db_connection, com_id, constants.comment_table, e)
-                _logger().error(f"An exception occurred when up voting/replying to comment {comment_id} : {e}", exc_info=True)
+                _logger().error(f"An exception occurred when up voting/replying to comment {comment_id} : {e}",
+                                exc_info=True)
     else:
         _logger().info("All comments in db have been replied")
 

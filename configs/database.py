@@ -26,7 +26,8 @@ def create_db_connection():
             user=user,
             password=password)
 
-        _logger().info("Db connection established successfully")
+        _logger().info("Database connection established successfully")
+
         return connection
     except mysql.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

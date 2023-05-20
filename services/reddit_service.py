@@ -1,5 +1,5 @@
-import os
 import re
+
 from constants import constants
 from logger import _logger
 from services.database_service import save_submission_and_comment_data_to_db
@@ -50,7 +50,7 @@ def check_keyword_from_submissions(reddit, db_conn, sub_name, keyword):
 
 # This section deals with reddit comments from a particular subreddit
 def check_keyword_from_comments(reddit, db_conn, sub_name, keyword):
-    for comment in reddit.subreddit(sub_name).comments(limit=1000):
+    for comment in reddit.subreddit(sub_name).comments(limit=10000):
         if re.search(keyword, comment.body, re.IGNORECASE):
             # save the found comment ids in the db
             extracted_data = {

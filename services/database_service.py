@@ -1,8 +1,10 @@
 import os
 from datetime import datetime
+
+from dotenv import load_dotenv
+
 from constants import constants
 from logger import _logger
-from dotenv import load_dotenv
 
 load_dotenv()
 bot_id = os.environ.get('BOT_ID')

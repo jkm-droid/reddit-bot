@@ -1,6 +1,5 @@
 import logging
 import logging.config
-import yaml
 
 
 def _logger():
@@ -12,11 +11,8 @@ def _logger():
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
 
-    # create formatter
-    formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-
     # add formatter to ch
-    ch.setFormatter(formatter)
+    ch.setFormatter(logging.basicConfig(format='%(asctime)s:%(levelname)s: %(message)s', datefmt='%d-%b-%y %H:%M:%S'))
 
     # add ch to logger
     if not logger.hasHandlers():
