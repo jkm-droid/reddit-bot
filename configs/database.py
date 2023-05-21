@@ -15,10 +15,10 @@ Establish connection to the db
 
 
 def create_db_connection():
-    host = os.environ.get('MYSQL_HOST')
-    database = os.environ.get('MYSQL_DATABASE')
-    user = os.environ.get('MYSQL_USER')
-    password = os.environ.get('MYSQL_PASSWORD')
+    host = os.environ.get('DB_HOST')
+    database = os.environ.get('DB_NAME')
+    user = os.environ.get('DB_USER')
+    password = os.environ.get('DB_PASSWORD')
     try:
         connection = mysql.connect(
             host=host,

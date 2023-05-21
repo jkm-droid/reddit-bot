@@ -54,7 +54,7 @@ def main():
                         # save the ids in the db
                         reddit_service.extract_data_from_reddit(reddit, db_connection, sub_reddit_name, keyword_name)
                         db_connection.close()
-                        _logger().info(f"Sleep after extracting a single key word {keyword_name}")
+                        _logger().info(f"Sleeping after extracting a single key word {keyword_name}")
                         time.sleep(300)
                         bot_should_sleep = False
                     else:

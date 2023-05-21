@@ -46,8 +46,8 @@ def send_replies_and_upvote(reddit, db_connection):
             sub_id = f"submission_id='{submission_id}'"
             try:
                 submission = reddit.submission(submission_id)
-                # submission.upvote()
-                # submission.reply(submission_reply)
+                submission.upvote()
+                submission.reply(submission_reply)
                 update_submission_or_comment(db_connection, sub_id, constants.submission_table)
                 _logger().info(f"Upvoted and replied to {constants.submission_category} {submission_id}")
             except Exception as e:

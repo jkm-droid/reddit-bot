@@ -1,4 +1,4 @@
-## reddit-bot
+## Reddit-bot
 The bot uses reddit `PRAW` to connect to the reddit api.
 
 The bot first tries to connect to the reddit api.
